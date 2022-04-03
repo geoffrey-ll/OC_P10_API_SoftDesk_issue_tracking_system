@@ -8,7 +8,7 @@ from projects.models import Comment, Contributor, Issue, Project
 class ProjectListSerializer(ModelSerializer):
     class Meta:
         model = Project
-        fields = ["id", "title", "author_user", "type"]
+        fields = ["id", "title", "author_user", "type", "description"]
 
 
 
@@ -26,7 +26,7 @@ class ProjectListSerializer(ModelSerializer):
 #         return serializer.data
 #
 #
-# class ContributorListSerializer(ModelSerializer):
-#     class Meta:
-#         model = Contributor
-#         field = ["id", "user", "role"]
+class ContributorListSerializer(ModelSerializer):
+    class Meta:
+        model = Contributor
+        fields = ["id", "user", "role"]

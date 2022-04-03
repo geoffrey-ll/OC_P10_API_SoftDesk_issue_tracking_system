@@ -18,12 +18,15 @@ from django.urls import include, path
 from rest_framework import routers
 
 
-from projects.views import ProjectViewSet
+from projects.views import ContributorViewSet, ProjectViewSet
 
 
 router = routers.SimpleRouter()
 router.register("projects", ProjectViewSet, basename="projects")
+router.register("projects/(?P<project_id>[^/.]+)/users", ContributorViewSet,
+                basename="contributors")
 
+# projects_router = routers.Dyna
 
 urlpatterns = [
     path('admin/', admin.site.urls),
