@@ -15,7 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from rest_framework import routers
+# from rest_framework import routers
+from rest_framework_nested import routers
 
 
 from projects.views import ContributorViewSet, ProjectViewSet
@@ -26,10 +27,13 @@ router.register("projects", ProjectViewSet, basename="projects")
 router.register("projects/(?P<project_id>[^/.]+)/users", ContributorViewSet,
                 basename="contributors")
 
-# projects_router = routers.Dyna
+# projects_router = routers.NestedSimpleRouter(router, "projects",
+#                                              lookup="projects")
+# projects_router.register("user", ContributorViewSet, basename="contributor")
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("api-auth/", include("rest_framework.urls")),
-    path("api/", include(router.urls))
+    path("api/", include(router.urls)),
 ]
