@@ -44,7 +44,8 @@ class Contributor(models.Model):
 
     class Meta:
         """Unicité d'un contributor."""
-        unique_together = ("user", "project")
+        unique_together = ("user", "project")  # , ("project", "role.m")
+        # unique_together = ("project", "role=m")
 
 
 class Issue(models.Model):
