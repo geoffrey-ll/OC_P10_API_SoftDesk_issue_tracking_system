@@ -1,11 +1,16 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework.serializers import SerializerMethodField
+from rest_framework.serializers import HyperlinkedModelSerializer
+from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 
 
 from projects.models import Comment, Contributor, Issue, Project
 
 
 class ContributorListSerializer(ModelSerializer):
+    # Temporaire. Test pour le POST avec drf-Nested
+    # parent_lookup_kwargs = {"project_pk": "project__id"}
+
     class Meta:
         model = Contributor
         fields = ["id", "user", "role"]
