@@ -29,6 +29,11 @@ router.register("projects", ProjectViewSet, basename="projects")
 # Temporaire, seulement pour avoir une trace de comment faire sans le Nested
 # router.register("projects/(?P<project_id>[^/.]+)/users", ContributorViewSet,
 #                 basename="contributors")
+# router.register("projects/(?P<project_id>[^/.]+)/issues", IssueViewSet,
+#                 basename="issues")
+# router.register("projects/(?P<project_id>[^/.]+)/issues/(?P<issue_id>[^/.]+)/comments", CommentViewSet,
+#                 basename="comments")
+
 
 projects_router = routers.NestedSimpleRouter(router, "projects",
                                              lookup="project")

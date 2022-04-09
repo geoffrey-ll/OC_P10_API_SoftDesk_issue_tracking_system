@@ -1,5 +1,5 @@
 # from django.contrib.auth.models import User
-from django.db import models
+from django.db import models, transaction
 from django.utils.translation import gettext_lazy as _
 
 
@@ -14,15 +14,11 @@ class Project(models.Model):
         IOS = 'i', _("iOS")
         ANDROID = 'a', _("Android")
 
-    # project_id = models.IntegerField(unique=True)  # À rajouter si besoin.
     title = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
     type = models.CharField(max_length=1, choices=ProjectType.choices,
                             default=ProjectType.BACK_END)
     author_user = models.ForeignKey(to=User, on_delete=models.CASCADE)
-
-    # Ajouter fonction pour généner automatiquement un contributor avec le
-    # rôle de superviseur, pour le author_user de Project
 
     class Meta:
         unique_together = ("id", "author_user")
@@ -37,7 +33,8 @@ class Contributor(models.Model):
         CONTRIBUTOR = 'c', _("Contributeur")
 
     user = models.ForeignKey(to=User, on_delete=models.CASCADE)
-    project = models.ForeignKey(to=Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(to=Project, on_delete=models.CASCADE,
+                                related_name="contributors")
     # permission = models.ChoiceField()
     role = models.CharField(max_length=1, choices=ContributorRole.choices,
                             default=ContributorRole.CONTRIBUTOR)
@@ -85,7 +82,7 @@ class Issue(models.Model):
 
 
 class Comment(models.Model):
-    description = models.TextField(null=True, blank=True)
+    description = models.TextField()
     author_user = models.ForeignKey(to=User, on_delete=models.CASCADE)
     issue = models.ForeignKey(to=Issue, on_delete=models.CASCADE)
     created_time = models.DateTimeField(auto_now_add=True)
