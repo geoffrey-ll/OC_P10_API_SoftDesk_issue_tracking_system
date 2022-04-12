@@ -9,8 +9,8 @@ from users.models import User
 # Create your models here.
 class Project(models.Model):
     class ProjectType(models.TextChoices):
-        BACK_END = "b", _("Back-end")
-        FRONT_END = "f", _("Front-end")
+        BACK_END = 'b', _("Back-end")
+        FRONT_END = 'f', _("Front-end")
         IOS = 'i', _("iOS")
         ANDROID = 'a', _("Android")
 
@@ -82,7 +82,7 @@ class Issue(models.Model):
 
 
 class Comment(models.Model):
-    description = models.TextField()
-    author_user = models.ForeignKey(to=User, on_delete=models.CASCADE)
     issue = models.ForeignKey(to=Issue, on_delete=models.CASCADE)
+    author_user = models.ForeignKey(to=User, on_delete=models.CASCADE)
+    description = models.TextField()
     created_time = models.DateTimeField(auto_now_add=True)
