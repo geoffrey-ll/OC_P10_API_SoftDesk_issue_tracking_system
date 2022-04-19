@@ -1,3 +1,4 @@
+from rest_framework.exceptions import NotAcceptable
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet, ViewSet
 
 
@@ -16,7 +17,13 @@ class ContributorViewSet(ModelViewSet):
     def perform_create(self, serializer):
         if self.request.user.is_authenticated:
             project = Project.objects.get(id=self.kwargs["project_pk"])
-            return serializer.save(project=project)
+            try:
+                return serializer.save(project=project)
+            except:
+                raise NotAcceptable(
+                    "Un seul superviseur par project "
+                    "Ce project a déjà un superviseur."
+                )
 
 
 class CommentViewSet(ModelViewSet):

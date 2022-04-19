@@ -1,14 +1,24 @@
+from django.db import models
+from django.forms.models import model_to_dict
 from django.utils.translation import gettext_lazy as _
+from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 from rest_framework.serializers import SerializerMethodField
 
 
 from projects.models import Comment, Contributor, Issue, Project
 from users.models import User
+from .translates import ContributorRole, \
+    IssuePriority, IssueStatus, IssueTag, \
+    ProjectType
+from .translates import translating_database
 
 
 def format_datetime(value):
     return value.strftime("%Y.%m.%d : %T")
+
+
+
 
 
 class ContributorListSerializer(ModelSerializer):
@@ -43,6 +53,16 @@ class CommentListSerializer(ModelSerializer):
         return ret
 
 
+# def translating_database(fields_to_translate, ret):
+#     for field, translator in fields_to_translate:
+#         from .translates import f"{translator}
+#         for var in translator:
+#             if ret[field] == var[0]:
+#                 return var[1]
+#         return None
+#     pass
+
+
 class IssueListSerializer(ModelSerializer):
     BUG  = 'b', _("Bug")
     TASK = 't', _("Tâche")
@@ -62,6 +82,8 @@ class IssueListSerializer(ModelSerializer):
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
+
+
         if ret["tag"] == self.BUG[0]:
             ret["tag"] = self.BUG[1]
         elif ret["tag"] == self.TASK[0]:
@@ -82,6 +104,7 @@ class IssueListSerializer(ModelSerializer):
             ret["status"] = self.IN_PROGRESS[1]
         elif ret["status"] == self.COMPLETED[0]:
             ret["status"] = self.COMPLETED[1]
+
 
         assignee_user = User.objects.get(id=ret["assignee_user"])
         author_user = User.objects.get(username=instance.author_user)
@@ -114,20 +137,3 @@ class ProjectListSerializer(ModelSerializer):
         elif ret["type"] == self.ANDROID[0]:
             ret["type"] = self.ANDROID[1]
         return ret
-
-
-# FUTUR :
-
-# class ProjectDetailSerializer(ModelSerializer):
-#     contributors = SerializerMethodField
-#
-#     class Meta:
-#         model = Project
-#         fields = ["id", "title", "author_user", "type", "description",
-#                   "contributors"]
-#
-#     def get_contributors(self, instance):
-#         queryset = instance.contributors.filter(project=self.id)
-#         serializer = ContributorListSerializer(queryset, many=True)
-#         return serializer.data
-#
