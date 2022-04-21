@@ -12,12 +12,6 @@ from .translates import ContributorRole, \
 
 # Create your models here.
 class Project(models.Model):
-    # class ProjectType(models.TextChoices):
-    #     BACK_END = 'b', _("Back-end")
-    #     FRONT_END = 'f', _("Front-end")
-    #     IOS = 'i', _("iOS")
-    #     ANDROID = 'a', _("Android")
-
     title = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
     type = models.CharField(max_length=1, choices=ProjectType.choices,
@@ -26,16 +20,18 @@ class Project(models.Model):
 
     class Meta:
         unique_together = ("id", "author_user")
+        constraints = [
+            UniqueConstraint(
+                fields=["title", "type"],
+                name="unique_project_type"
+            )
+        ]
 
     def __str__(self):
         return f"{self.id} : {self.title[:20]}"
 
 
 class Contributor(models.Model):
-    # class ContributorRole(models.TextChoices):
-    #     MANAGER = 'm', _("Superviseur")
-    #     CONTRIBUTOR = 'c', _("Contributeur")
-
     user = models.ForeignKey(to=User, on_delete=models.CASCADE)
     project = models.ForeignKey(to=Project, on_delete=models.CASCADE,
                                 related_name="contributors")
@@ -44,9 +40,8 @@ class Contributor(models.Model):
                             default=ContributorRole.CONTRIBUTOR)
 
     class Meta:
-        """Unicité d'un contributor."""
+        """Unicité d'un contributor et d'un superviseur par project"""
         unique_together = ("user", "project")
-        # unique_together = ("project", "role=m")
         constraints = [
             UniqueConstraint(
                 fields=["project"],
@@ -57,21 +52,6 @@ class Contributor(models.Model):
 
 
 class Issue(models.Model):
-    # class IssueTag(models.TextChoices):
-    #     BUG = 'b', _("Bug")
-    #     TASK = 't', _("Tâche")
-    #     ENHANCEMENT = 'e', _("Amélioration")
-    #
-    # class IssuePriority(models.TextChoices):
-    #     LOW = 'l', _("Faible")
-    #     AVERAGE = 'a', _("Moyenne")
-    #     HIGH = 'h', _("Haute")
-    #
-    # class IssueStatus(models.TextChoices):
-    #     TO_DO = 't', _("À faire")
-    #     IN_PROGRESS = 'i', _("En cours")
-    #     COMPLETED = 'c', _("Terminé")
-
     title = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
     tag = models.CharField(max_length=1, choices=IssueTag.choices,

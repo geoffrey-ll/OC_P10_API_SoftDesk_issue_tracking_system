@@ -19,8 +19,6 @@ def format_datetime(value):
 
 
 
-
-
 class ContributorListSerializer(ModelSerializer):
     MANAGER = 'm', _("Superviseur")
     CONTRIBUTOR = 'c', _("Contributeur")

@@ -21,7 +21,7 @@ class ContributorViewSet(ModelViewSet):
                 return serializer.save(project=project)
             except:
                 raise NotAcceptable(
-                    "Un seul superviseur par project "
+                    "Un seul superviseur par project. "
                     "Ce project a déjà un superviseur."
                 )
 
@@ -62,8 +62,14 @@ class ProjectViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         if self.request.user.is_authenticated:
-            instance = serializer.save(author_user=self.request.user)
-            Contributor.objects.create(
-                user=self.request.user, project=instance, role='m'
-            )
-            return
+            try:
+                instance = serializer.save(author_user=self.request.user)
+                Contributor.objects.create(
+                    user=self.request.user, project=instance, role='m'
+                )
+                return
+            except:
+                raise NotAcceptable(
+                    "Plusieurs projects de même type ne peuvent pas partagés "
+                    "le même nom."
+                )
