@@ -40,7 +40,7 @@ L'utilisation de cette API nécessite une authentification (voir [connexion](#co
 `$ git clone https://github.com/geoffrey-ll/P10_GL_API_SoftDesk .` ou téléchargez-le [ici](https://github.com/geoffrey-ll/P10_GL_API_SoftDesk/archive/refs/heads/master.zip)
 2.  Créez un environnement virtuel avec `$ python -m venv env` sous Windows,\
 ou `$ python3 -m venv env` sous macOS et Linux.
-3.  Activez l'environnement virtuel avec `$ env/Scripts/activate` sous Windows,\
+3.  Activez l'environnement virtuel avec `$ env\Scripts\activate` sous Windows,\
  ou `$ source env/bin/activate` sous macOS et Linux.
 4.  Installez les dépendances du projet avec `$ pip install -r requirements.txt`
 5.  Démarrez le serveur avec `$ python manage.py runserver`
