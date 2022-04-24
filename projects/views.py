@@ -47,9 +47,19 @@ class IssueViewSet(ModelViewSet):
     def perform_create(self, serializer):
         if self.request.user.is_authenticated:
             project = Project.objects.get(id=self.kwargs["project_pk"])
+
+            contributors_user = [c.user for c in project.contributors.all()]
+            assigned_user = serializer.validated_data['assignee_user']
+
+            # serializer["author_user"] = self.request.user
+            if assigned_user not in contributors_user:
+                raise NotAcceptable(
+                    "L'utilisateur n'est pas contributeur à ce project."
+                )
             return serializer.save(
                 project=project, author_user=self.request.user
             )
+
 
 
 class ProjectViewSet(ModelViewSet):
