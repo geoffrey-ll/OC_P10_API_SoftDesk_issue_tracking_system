@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.forms.models import model_to_dict
 from django.utils.translation import gettext_lazy as _
@@ -7,7 +8,6 @@ from rest_framework.serializers import SerializerMethodField
 
 
 from projects.models import Comment, Contributor, Issue, Project
-from users.models import User
 from .translates import ContributorRole, \
     IssuePriority, IssueStatus, IssueTag, \
     ProjectType

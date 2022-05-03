@@ -1,10 +1,9 @@
-# from django.contrib.auth.models import User
+from django.contrib.auth.models import User
 from django.db import models, transaction
 from django.db.models import Q, UniqueConstraint
 # from django.utils.translation import gettext_lazy as _
 
 
-from users.models import User
 from .translates import ContributorRole, \
     IssuePriority, IssueStatus, IssueTag, \
     ProjectType
