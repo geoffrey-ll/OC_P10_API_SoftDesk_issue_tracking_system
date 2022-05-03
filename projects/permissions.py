@@ -3,7 +3,7 @@ from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 
 class AuthorPermission(BasePermission):
-    message = "Vous n'êtes pas contributeur de ce project."
+    # message = "blabla"
     NotAuthenticated(detail="TEST")
 
     def has_permission(self, request, view):
