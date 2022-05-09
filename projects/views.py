@@ -9,32 +9,17 @@ from projects.serializers import ContributorListSerializer, \
     CommentListSerializer, IssueListSerializer, ProjectListSerializer
 # from projects.permissions import AuthorPermission,
 
+from .permissions import ProjectContributorPermission
+
 
 # Create your views here.
-MESSAGE_NOT_AUTHENTICATED = "Cette API nécessite d'être authentifié."
-MESSAGE_NOT_FOUND = "Projet inexistant."
-MESSAGE_PERMISSION_DENIED = "Vous n'êtes pas contributeur de ce project."
-
-
-# class GetQuerysetMixin:
-#     def get_queryset(self):
-#         project = self.kwargs["project_pk"]
-#         contributors_project = Contributor.objects.filter(project=project)
-#         if self.request.user in [c.user for c in contributors_project]:
-#             return Issue.objects.filter(project=project)
-#         else:
-#             raise PermissionDenied(
-#                 "Vous n'êtes pas contributeur de ce project."
-#             )
-
-
 def get_queryset_mixin(self):
     project = self.kwargs["project_pk"]
     contributors_project = Contributor.objects.filter(project=project)
-    if self.request.user in [c.user for c in contributors_project]:
-        return project, contributors_project
-    else:
-        raise PermissionDenied(MESSAGE_PERMISSION_DENIED)
+    ProjectContributorPermission.has_object_permission(
+        self, self.request, self, contributors_project
+    )
+    return project, contributors_project
 
 
 class ContributorViewSet(ModelViewSet):
@@ -95,9 +80,10 @@ class ProjectViewSet(ModelViewSet):
     serializer_class = ProjectListSerializer
 
     def get_queryset(self):
+        # if self.request.user.is_superuser:
+        #     return Project.objects.all()
+        # else:
         user_contributions = Contributor.objects.filter(user=self.request.user)
-        # projects_user = [c.project.id for c in user_contributions]
-        # return Project.objects.filter(id__in=projects_user)
         return Project.objects.filter(contributors__in=user_contributions)
 
     def perform_create(self, serializer):
@@ -113,3 +99,7 @@ class ProjectViewSet(ModelViewSet):
                     "Plusieurs projects de même type ne peuvent pas partagés "
                     "le même nom."
                 )
+
+# def get_queryset_superuser(self, models):
+#     if self.request.user.is_superuser:
+#         return models.objects.all()

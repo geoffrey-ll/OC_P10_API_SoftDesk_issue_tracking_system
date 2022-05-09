@@ -15,7 +15,6 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-# from rest_framework import routers
 from rest_framework_nested import routers
 
 
@@ -25,14 +24,6 @@ from projects.views import ContributorViewSet, CommentViewSet, IssueViewSet, \
 
 router = routers.SimpleRouter()
 router.register("projects", ProjectViewSet, basename="projects")
-
-# Temporaire, seulement pour avoir une trace de comment faire sans le Nested
-# router.register("projects/(?P<project_id>[^/.]+)/users", ContributorViewSet,
-#                 basename="contributors")
-# router.register("projects/(?P<project_id>[^/.]+)/issues", IssueViewSet,
-#                 basename="issues")
-# router.register("projects/(?P<project_id>[^/.]+)/issues/(?P<issue_id>[^/.]+)/comments", CommentViewSet,
-#                 basename="comments")
 
 
 projects_router = routers.NestedSimpleRouter(router, "projects",

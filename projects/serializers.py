@@ -18,7 +18,6 @@ def format_datetime(value):
     return value.strftime("%Y.%m.%d : %T")
 
 
-
 class ContributorListSerializer(ModelSerializer):
     MANAGER = 'm', _("Superviseur")
     CONTRIBUTOR = 'c', _("Contributeur")
@@ -120,9 +119,32 @@ class ProjectListSerializer(ModelSerializer):
     IOS = 'i', _("iOS")
     ANDROID = 'a', _("Android")
 
+    manager = SerializerMethodField("get_project_manager")
+    my_role = SerializerMethodField("get_contributor__role")
+    url_project = SerializerMethodField("get_url_project")
+
     class Meta:
         model = Project
         exclude = ("author_user", )
+
+    def get_project_manager(self, instance):
+        queryset = Contributor.objects.get(project=instance, role='m')
+        serializers = ContributorListSerializer(queryset)
+        return serializers.data["user"]
+
+    def get_contributor__role(self, instance):
+        # if self.context["request"].user.is_superuser:
+        #     return
+        request_user = self.context["request"].user
+        queryset = instance.contributors.get(
+            project=instance.id,
+            user=request_user
+        )
+        serializer = ContributorListSerializer(queryset)
+        return serializer.data["role"]
+
+    def get_url_project(self, instance):
+        return f"localhost:8000/api/projects/{instance.id}"
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
