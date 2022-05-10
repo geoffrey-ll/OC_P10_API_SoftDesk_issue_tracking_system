@@ -133,8 +133,8 @@ class ProjectListSerializer(ModelSerializer):
         return serializers.data["user"]
 
     def get_contributor__role(self, instance):
-        # if self.context["request"].user.is_superuser:
-        #     return
+        if self.context["request"].user.is_superuser:
+            return
         request_user = self.context["request"].user
         queryset = instance.contributors.get(
             project=instance.id,

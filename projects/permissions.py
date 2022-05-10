@@ -13,6 +13,8 @@ class ElementAuthorPermission(BasePermission):
 
     def has_permission(self, request, view):
         if request.user.is_authenticated:
+            if request.user.is_superuser:
+                return True
             if view.__class__.__name__ == "ContributorViewSet":
                 return \
                     ProjectAuthorPermission.has_permission(self, request, view)
@@ -27,6 +29,8 @@ class ElementAuthorPermission(BasePermission):
             pass
         try:
             if obj.user:
+                if request.user.is_superuser:
+                    return True
                 return ProjectAuthorPermission.has_object_permission(
                     self, request, view, obj
                 )
@@ -57,8 +61,7 @@ class ProjectContributorPermission(BasePermission):
     #     donc uniquement lorsque has_object_permission est appelé
 
     def has_object_permission(self, request, view, obj):
+        if request.user.is_superuser:
+            return True
         if request.user not in [c.user for c in obj]:
             raise PermissionDenied(MESSAGE_PERMISSION_DENIED)
-
-class SuperuserPermission(BasePermission):
-    pass

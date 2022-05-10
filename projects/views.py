@@ -80,11 +80,11 @@ class ProjectViewSet(ModelViewSet):
     serializer_class = ProjectListSerializer
 
     def get_queryset(self):
-        # if self.request.user.is_superuser:
-        #     return Project.objects.all()
-        # else:
-        user_contributions = Contributor.objects.filter(user=self.request.user)
-        return Project.objects.filter(contributors__in=user_contributions)
+        if self.request.user.is_superuser:
+            return Project.objects.all()
+        else:
+            user_contributions = Contributor.objects.filter(user=self.request.user)
+            return Project.objects.filter(contributors__in=user_contributions)
 
     def perform_create(self, serializer):
         if self.request.user.is_authenticated:
