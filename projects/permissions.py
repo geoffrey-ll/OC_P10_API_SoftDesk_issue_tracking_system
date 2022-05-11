@@ -2,10 +2,8 @@ from rest_framework.exceptions import NotAuthenticated, PermissionDenied
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 
+from .messages_error import MESSAGE_PERMISSION_DENIED
 from .models import Project
-
-
-MESSAGE_PERMISSION_DENIED = "Vous n'êtes pas contributeur de ce project."
 
 
 class ElementAuthorPermission(BasePermission):

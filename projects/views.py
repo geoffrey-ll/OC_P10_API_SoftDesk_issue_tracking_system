@@ -9,7 +9,9 @@ from projects.serializers import ContributorListSerializer, \
     CommentListSerializer, IssueListSerializer, ProjectListSerializer
 # from projects.permissions import AuthorPermission,
 
-from .messages_error import MESSAGE_VALIDATED_DATA_IS_NOT_CONTRIBUTOR
+from .messages_error import MESSAGE_VALIDATED_DATA_IS_NOT_CONTRIBUTOR, \
+    MESSAGE_VALIDATED_DATA_NOT_MANY_MANAGER, \
+    MESSAGE_VALIDATED_DATA_TITLE_PROJECT
 from .permissions import ProjectContributorPermission
 
 
@@ -36,10 +38,7 @@ class ContributorViewSet(ModelViewSet):
             try:
                 return serializer.save(project=project)
             except:
-                raise NotAcceptable(
-                    "Un seul superviseur par project. "
-                    "Ce project a déjà un superviseur."
-                )
+                raise ValidationError(MESSAGE_VALIDATED_DATA_NOT_MANY_MANAGER)
 
 
 class CommentViewSet(ModelViewSet):
@@ -95,10 +94,7 @@ class ProjectViewSet(ModelViewSet):
                 )
                 return
             except:
-                raise NotAcceptable(
-                    "Plusieurs projects de même type ne peuvent pas partagés "
-                    "le même nom."
-                )
+                raise ValidationError(MESSAGE_VALIDATED_DATA_TITLE_PROJECT)
 
 # def get_queryset_superuser(self, models):
 #     if self.request.user.is_superuser:
