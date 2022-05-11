@@ -10,10 +10,15 @@ def shorting_title(obj):
 
 
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ("id", "author_user", "issue", "shorten_description")
+    list_display = (
+        "id", "author_user", "project", "issue", "shorten_description"
+    )
 
     def shorten_description(self, obj):
         return obj.description[:50]
+
+    def project(self, obj):
+        return obj.issue.project
 
 
 class ContributorAdmin(admin.ModelAdmin):
