@@ -3,11 +3,13 @@ from django.db import models
 from django.forms.models import model_to_dict
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
+from rest_framework.exceptions import NotAcceptable, ValidationError
 from rest_framework.serializers import ModelSerializer
 from rest_framework.serializers import SerializerMethodField
 
 
-from projects.models import Comment, Contributor, Issue, Project
+from .models import Comment, Contributor, Issue, Project
+from .messages_error import MESSAGE_VALIDATED_DATA_IS_NOT_CONTRIBUTOR
 from .translates import ContributorRole, \
     IssuePriority, IssueStatus, IssueTag, \
     ProjectType
@@ -112,6 +114,23 @@ class IssueListSerializer(ModelSerializer):
 
         return ret
 
+    def validate_assignee_user(self, value):
+        project = self.instance.project
+        contributors_user = [c.user for c in project.contributors.all()]
+        if value not in contributors_user:
+            raise ValidationError(MESSAGE_VALIDATED_DATA_IS_NOT_CONTRIBUTOR)
+        return value
+
+
+class ProjectDetailSerializer(ModelSerializer):
+    endpoint = SerializerMethodField("get_endpoint")
+
+    def get_endpoint(self, instance):
+        return {
+            "users": f"api/project/{instance.id}/users",
+            "issues": f"api/project/{instance.id}/issues"
+        }
+
 
 class ProjectListSerializer(ModelSerializer):
     BACK_END = 'b', _("Back-end")
@@ -121,7 +140,7 @@ class ProjectListSerializer(ModelSerializer):
 
     manager = SerializerMethodField("get_project_manager")
     my_role = SerializerMethodField("get_contributor__role")
-    url_project = SerializerMethodField("get_url_project")
+    endpoint = SerializerMethodField("get_endpoint")
 
     class Meta:
         model = Project
@@ -134,7 +153,7 @@ class ProjectListSerializer(ModelSerializer):
 
     def get_contributor__role(self, instance):
         if self.context["request"].user.is_superuser:
-            return
+            return "Domain supervisor"
         request_user = self.context["request"].user
         queryset = instance.contributors.get(
             project=instance.id,
@@ -143,8 +162,8 @@ class ProjectListSerializer(ModelSerializer):
         serializer = ContributorListSerializer(queryset)
         return serializer.data["role"]
 
-    def get_url_project(self, instance):
-        return f"localhost:8000/api/projects/{instance.id}"
+    def get_endpoint(self, instance):
+        return f"api/projects/{instance.id}"
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)

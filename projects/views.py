@@ -1,5 +1,5 @@
 from rest_framework.exceptions import NotAcceptable, NotAuthenticated, \
-    NotFound, PermissionDenied
+    NotFound, PermissionDenied, ValidationError
 # from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet, ViewSet
 
@@ -9,6 +9,7 @@ from projects.serializers import ContributorListSerializer, \
     CommentListSerializer, IssueListSerializer, ProjectListSerializer
 # from projects.permissions import AuthorPermission,
 
+from .messages_error import MESSAGE_VALIDATED_DATA_IS_NOT_CONTRIBUTOR
 from .permissions import ProjectContributorPermission
 
 
@@ -66,10 +67,9 @@ class IssueViewSet(ModelViewSet):
             project = Project.objects.get(id=self.kwargs["project_pk"])
             contributors_user = [c.user for c in project.contributors.all()]
             assigned_user = serializer.validated_data['assignee_user']
-
             if assigned_user not in contributors_user:
-                raise NotAcceptable(
-                    "L'utilisateur n'est pas contributeur à ce project."
+                raise ValidationError(
+                    MESSAGE_VALIDATED_DATA_IS_NOT_CONTRIBUTOR
                 )
             return serializer.save(
                 project=project, author_user=self.request.user
