@@ -7,12 +7,12 @@ from .models import Project
 
 
 class ElementAuthorPermission(BasePermission):
-    NotAuthenticated(detail="TEST")
-
     def has_permission(self, request, view):
         if request.user.is_authenticated:
             if request.user.is_superuser:
                 return True
+                # if request.method not in SAFE_METHODS:
+                #     return False
             if view.__class__.__name__ == "ContributorViewSet":
                 return \
                     ProjectAuthorPermission.has_permission(self, request, view)
@@ -28,6 +28,8 @@ class ElementAuthorPermission(BasePermission):
         try:
             if obj.user:
                 if request.user.is_superuser:
+                    if request.method is "PUT":
+                        return True
                     return True
                 return ProjectAuthorPermission.has_object_permission(
                     self, request, view, obj
@@ -63,3 +65,10 @@ class ProjectContributorPermission(BasePermission):
             return True
         if request.user not in [c.user for c in obj]:
             raise PermissionDenied(MESSAGE_PERMISSION_DENIED)
+
+
+class TestPermission(BasePermission):
+    def has_permission(self, request, view):
+        return False
+    def has_object_permission(self, request, view, obj):
+        return False

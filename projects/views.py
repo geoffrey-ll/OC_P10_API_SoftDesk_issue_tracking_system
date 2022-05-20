@@ -12,7 +12,7 @@ from projects.serializers import ContributorListSerializer, \
 from .messages_error import MESSAGE_VALIDATED_DATA_IS_NOT_CONTRIBUTOR, \
     MESSAGE_VALIDATED_DATA_NOT_MANY_MANAGER, \
     MESSAGE_VALIDATED_DATA_TITLE_PROJECT
-from .permissions import ProjectContributorPermission
+from .permissions import ProjectContributorPermission, TestPermission, ElementAuthorPermission
 
 
 # Create your views here.
@@ -77,6 +77,7 @@ class IssueViewSet(ModelViewSet):
 
 class ProjectViewSet(ModelViewSet):
     serializer_class = ProjectListSerializer
+    permission_classes = [TestPermission]
 
     def get_queryset(self):
         if self.request.user.is_superuser:
@@ -95,7 +96,3 @@ class ProjectViewSet(ModelViewSet):
                 return
             except:
                 raise ValidationError(MESSAGE_VALIDATED_DATA_TITLE_PROJECT)
-
-# def get_queryset_superuser(self, models):
-#     if self.request.user.is_superuser:
-#         return models.objects.all()
