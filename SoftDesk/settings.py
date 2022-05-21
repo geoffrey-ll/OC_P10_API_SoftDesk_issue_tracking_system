@@ -131,5 +131,5 @@ REST_FRAMEWORK = {
         "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 5,
     "DEFAULT_PERMISSION_CLASSES":
-        ["projects.permissions.ElementAuthorPermission"]
+        ["projects.permissions.DefaultPermission"]
 }
