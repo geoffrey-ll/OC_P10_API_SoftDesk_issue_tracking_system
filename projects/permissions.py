@@ -103,141 +103,92 @@ class DefaultPermission(BasePermission):
     #_____________________
 
     def get_my_role(self, request, view):
-        # view.queryset
-        test01 = view.__getqueryset__
-        print(f"\ntest01\n{test01}\n")
-        test02 = view.__getqueryset__.author_user
-        print(f"\ntest02\n{test02}\n")
+        if view.__class__.__name__ == "ProjectViewSet":
+            project_id = view.kwargs["pk"]
+        else:
+            project_id = view.kwargs["project_pk"]
+
+        print(f"\n{Contributor.objects.exist(project=project_id, user=request.user)}\n")
 
         return Contributor.objects.get(
-            project=view.kwargs["project_pk"],
-            user=request.user
+            project=project_id, user=request.user
         ).role
 
     def has_permission(self, request, view):
-        # option = "has_permission"
-        print(f"\nhas 01\n")
         if request.user.is_authenticated:
-            print(f"\nhas 02\n")
-            # if view.__class__.__name__ == "ProjectViewSet":
-            #     return True
-            # else:
-                # return self.assign_permission(request, view, option)
-            if request.user.is_superuser:
-                print(f"\nhas 03\n")
-                # return superuser_permission(request, view, option="has_perm")
-                return SuperuserPermission().has_permission(request, view)
-            elif view.__class__.__name__ == "ProjectViewSet":
-                print(f"\nhas 04\n")
+            if view.__class__.__name__ == "ProjectViewSet" \
+                    and view.detail == False:
                 return True
 
             else:
-                print(f"\nhas 05\n")
                 try:
-                    print(f"\nhas 06\n")
                     my_role = self.get_my_role(request, view)
                 except:
-                    print(f"\nhas except 01\n")
                     raise PermissionDenied(detail=MESSAGE_PERMISSION_DENIED)
 
                 if my_role == 'm':
-                    print(f"\nhas 07\n")
                     return ManagerPermission().has_permission(
                         request, view
                     )
                 if my_role == 'c':
-                    print(f"\nhas 08\n")
                     return ContributorPermission().has_permission(
                         request, view
                     )
-        print(f"\nhas except 02\n")
+
         raise NotAuthenticated(detail=MESSAGE_PERMISSION_NOT_AUTHENTICATED)
 
     def has_object_permission(self, request, view, obj):
-        print(f"\nobj 01\n")
         if request.user.is_authenticated:
-            print(f"\nobj 02\n")
-            # return self.assign_permission(request, view)
-            if request.user.is_superuser:
-                print(f"\nobj 03\n")
-                # return superuser_permission(request, option="has_obj")
-                return SuperuserPermission().has_object_permission(
+            # Lignes à remettre dans le has_object ??
+            # Le print ne s'affiche que lorsqu'on est dans un 'detail', pas dans une 'list'
+            # Le has_object_permission n'est finalement appelé que lors des 'detail' ou pas ?????
+            #
+            # if view.__class__.__name__ == "ProjectViewSet" \
+            #         and view.detail == True:
+            #     print(f"\nPASSÉ PAR ICI\n")
+            #     return True
+            try:
+                my_role = self.get_my_role(request, view)
+            except:
+                raise PermissionDenied(detail=MESSAGE_PERMISSION_DENIED)
+
+            if my_role == 'm':
+                return ManagerPermission().has_object_permission(
+                    request, view, obj
+                )
+            if my_role == 'c':
+                return ContributorPermission().has_object_permission(
                     request, view, obj
                 )
 
-            else:
-                print(f"\nobj 04\n")
-                try:
-                    print(f"\nobj 05\n")
-                    my_role = self.get_my_role(request, view)
-                except:
-                    print(f"\nobj except 01\n")
-                    raise PermissionDenied(detail=MESSAGE_PERMISSION_DENIED)
-
-                if my_role == 'm':
-                    print(f"\nobj 06\n")
-                    return ManagerPermission().has_object_permission(
-                        request, view, obj
-                    )
-                if my_role == 'c':
-                    print(f"\nobj 07\n")
-                    return ContributorPermission().has_object_permission(
-                        request, view, obj
-                    )
-
-        print(f"\nobj except 02\n")
         raise NotAuthenticated(detail=MESSAGE_PERMISSION_NOT_AUTHENTICATED)
-
-
-# Échec sous forme de def ………
-#
-# def superuser_permission(request, option):
-#     # def has_permission(request, view):
-#     if option == "has_perm":
-#         print(f"\nLA\n")
-#         return request.method in SAFE_METHODS
-#
-#     # def has_object_permission(request, view, obj):
-#     if option == "has_obj":
-#         print(f"\nICI\n")
-#         return True
-
-class SuperuserPermission(BasePermission):
-    SAFE_METHODS = ["GET", "PUT", "DELETE", "HEAD", "OPTION"]
-
-    def has_permission(self, request, view):
-        print(f"\nLA\n")
-        return request.method in SAFE_METHODS
-
-    def has_object_permission(self, request, view, obj):
-        print(f"\nICI\n")
-        return True
 
 
 class ManagerPermission(BasePermission):
     def has_permission(self, request, view):
+        print(f"\nMANAGER   HAS")
         return True
 
     def has_object_permission(self, request, view, obj):
+        print(f"\nMANAGER   OBJ")
         if view.__class__.__name__ == "ContributorViewSet" \
                 or view.__class__.__name__ == "ProjectViewSet":
             return True
-        # else: Inutile ??
         if request.user != obj.author_user:
             return request.method in SAFE_METHODS
-        return True
 
 
 class ContributorPermission(BasePermission):
     def has_permission(self, request, view):
+        print(f"\nCONTRIBUTEUR   HAS")
         if view.__class__.__name__ is "ContributorViewSet":
             return request.method in SAFE_METHODS
         return True
 
     def has_object_permission(self, request, view, obj):
+        print(f"\nCONTRIBUTEUR   OBJ")
         if view.__class__.__name__ == "ContributorViewSet":
             return request.method in SAFE_METHODS
 
         if request.user != obj.author_user:
             return request.method in SAFE_METHODS
-        return True
