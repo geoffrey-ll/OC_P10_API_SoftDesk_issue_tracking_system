@@ -65,6 +65,8 @@ class Issue(models.Model):
     assignee_user = models.ForeignKey(to=User, related_name="assigned_issues",
                                       default=author_user,
                                       on_delete=models.CASCADE)
+                                    # ond_delete=models.SET_NULL
+                                    # on_delete=models.PROTECT
     created_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

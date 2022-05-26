@@ -50,7 +50,7 @@ class AssignPermission(BasePermission):
             # Le has_object_permission n'est finalement appelé que lors des 'detail' ou pas ?????
             #
             # if view.__class__.__name__ == "ProjectViewSet" \
-            #         and view.detail == True:
+            #         and view.detail == False:
             #     print(f"\nPASSÉ PAR ICI\n")
             #     return True
             try:

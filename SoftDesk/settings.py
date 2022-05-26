@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "rest_framework",
+    "rest_framework_simplejwt",
     "projects",
 ]
 
@@ -131,5 +132,7 @@ REST_FRAMEWORK = {
         "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 5,
     "DEFAULT_PERMISSION_CLASSES":
-        ["projects.permissions.AssignPermission"]
+        ["projects.permissions.AssignPermission"],
+    "DEFAULT_AUTHENTICATION_CLASSES":
+        ("rest_framework_simplejwt.authentication.JWTAuthentication",)
 }
