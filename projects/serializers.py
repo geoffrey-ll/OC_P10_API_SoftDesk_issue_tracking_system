@@ -2,7 +2,6 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.forms.models import model_to_dict
 from django.utils.translation import gettext_lazy as _
-from rest_framework import serializers
 from rest_framework.exceptions import NotAcceptable, ValidationError
 from rest_framework.serializers import ModelSerializer
 from rest_framework.serializers import SerializerMethodField
@@ -63,7 +62,7 @@ class CommentListSerializer(ModelSerializer):
 
 
 class IssueListSerializer(ModelSerializer):
-    BUG  = 'b', _("Bug")
+    BUG = 'b', _("Bug")
     TASK = 't', _("Tâche")
     ENHANCEMENT = 'e', _("Amélioration")
 

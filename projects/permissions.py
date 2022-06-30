@@ -45,14 +45,6 @@ class AssignPermission(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         if request.user.is_authenticated:
-            # Lignes à remettre dans le has_object ??
-            # Le print ne s'affiche que lorsqu'on est dans un 'detail', pas dans une 'list'
-            # Le has_object_permission n'est finalement appelé que lors des 'detail' ou pas ?????
-            #
-            # if view.__class__.__name__ == "ProjectViewSet" \
-            #         and view.detail == False:
-            #     print(f"\nPASSÉ PAR ICI\n")
-            #     return True
             try:
                 my_role = self.get_my_role(request, view)
             except:

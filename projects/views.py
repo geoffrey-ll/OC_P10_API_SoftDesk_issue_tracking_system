@@ -1,42 +1,30 @@
-from rest_framework.exceptions import NotAcceptable, NotAuthenticated, \
-    NotFound, PermissionDenied, ValidationError
-# from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import (
+    NotAcceptable,
+    NotAuthenticated,
+    NotFound,
+    PermissionDenied,
+    ValidationError
+)
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet, ViewSet
 
 
 from projects.models import Comment, Contributor, Issue, Project
-from projects.serializers import ContributorListSerializer, \
-    CommentListSerializer, IssueListSerializer, ProjectListSerializer
-# from projects.permissions import AuthorPermission,
-
-from .messages_error import MESSAGE_VALIDATED_DATA_IS_NOT_CONTRIBUTOR, \
-    MESSAGE_VALIDATED_DATA_NOT_MANY_MANAGER, \
+from projects.serializers import (
+    ContributorListSerializer,
+    CommentListSerializer,
+    IssueListSerializer,
+    ProjectListSerializer
+)
+from .messages_error import (
+    MESSAGE_VALIDATED_DATA_IS_NOT_CONTRIBUTOR,
+    MESSAGE_VALIDATED_DATA_NOT_MANY_MANAGER,
     MESSAGE_VALIDATED_DATA_TITLE_PROJECT
-# from .permissions import ProjectContributorPermission, TestPermission, ElementAuthorPermission
-
-
-# Create your views here.
-
-
-# class GetQuerysetMixin:   OU GetDataMixin
-#   def get_project(self, view):
-#       return view.kwargs["project_pk"]
-#
-#   def get_contributors_project(self):
-#       return Contributor.objects.filter(project=self.get_project)
-
-# EXEMPLE:
-# def get_queryset(self):
-#     contributors_project = GetQuerysetMixin.contributors_project(self)
-
+)
 
 
 def get_queryset_mixin(self):
     project = self.kwargs["project_pk"]
     contributors_project = Contributor.objects.filter(project=project)
-    # ProjectContributorPermission.has_object_permission(
-    #     self, self.request, self, contributors_project
-    # )
     return project, contributors_project
 
 
