@@ -1,33 +1,46 @@
 from django.contrib.auth.models import User
-from django.db import models
-from django.forms.models import model_to_dict
 from django.utils.translation import gettext_lazy as _
-from rest_framework.exceptions import NotAcceptable, ValidationError
+from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
 from rest_framework.serializers import SerializerMethodField
 
-
 from .models import Comment, Contributor, Issue, Project
 from .messages_error import MESSAGE_VALIDATED_DATA_IS_NOT_CONTRIBUTOR
-from .translates import ContributorRole, \
-    IssuePriority, IssueStatus, IssueTag, \
-    ProjectType
-from .translates import translating_database
 
 
 def format_datetime(value):
-    return value.strftime("%Y.%m.%d : %T")
+    """Formatage de l'horodatage"""
+    return value.strftime("%Y.%m.%d : %T")
 
 
-class ContributorListSerializer(ModelSerializer):
+def get_url(self):
+    """Renvoir l'url de la request"""
+    url = self.context['request'].__dict__['_request'].__dict__['META']['PATH_INFO']
+    return url
+
+
+class ContributorSerializer(ModelSerializer):
+    """Serializer du model Contributor"""
     MANAGER = 'm', _("Superviseur")
     CONTRIBUTOR = 'c', _("Contributeur")
+
+    endpoint = SerializerMethodField("get_endpoint")
 
     class Meta:
         model = Contributor
         exclude = ("project", )
 
+    def get_endpoint(self, instance):
+        """Endpoints"""
+        try:
+            if self.context["view"].detail is True:
+                return ''
+            return f"{get_url(self)}{instance.id}"
+        except:
+            return ''
+
     def to_representation(self, instance):
+        """Représentation front des données"""
         ret = super().to_representation(instance)
         if ret["role"] == self.MANAGER[0]:
             ret["role"] = self.MANAGER[1]
@@ -38,12 +51,22 @@ class ContributorListSerializer(ModelSerializer):
         return ret
 
 
-class CommentListSerializer(ModelSerializer):
+class CommentSerializer(ModelSerializer):
+    """Serializer du model Comment"""
+    endpoint = SerializerMethodField("get_endpoint")
+
     class Meta:
         model = Comment
         exclude = ("issue", "author_user", )
 
+    def get_endpoint(self, instance):
+        """Endpoints"""
+        if self.context["view"].detail is True:
+            return ''
+        return f"{get_url(self)}{instance.id}"
+
     def to_representation(self, instance):
+        """Représentation front des données"""
         ret = super().to_representation(instance)
         author_user = User.objects.get(username=instance.author_user)
         ret["author_user"] = author_user.username
@@ -51,17 +74,8 @@ class CommentListSerializer(ModelSerializer):
         return ret
 
 
-# def translating_database(fields_to_translate, ret):
-#     for field, translator in fields_to_translate:
-#         from .translates import f"{translator}
-#         for var in translator:
-#             if ret[field] == var[0]:
-#                 return var[1]
-#         return None
-#     pass
-
-
-class IssueListSerializer(ModelSerializer):
+class IssueSerializer(ModelSerializer):
+    """Serializer du model Issue"""
     BUG = 'b', _("Bug")
     TASK = 't', _("Tâche")
     ENHANCEMENT = 'e', _("Amélioration")
@@ -74,13 +88,21 @@ class IssueListSerializer(ModelSerializer):
     IN_PROGRESS = 'i', _("En cours")
     COMPLETED = 'c', _("Terminé")
 
+    endpoint = SerializerMethodField("get_endpoint")
+
     class Meta:
         model = Issue
         exclude = ("project", "author_user", )
 
-    def to_representation(self, instance):
-        ret = super().to_representation(instance)
+    def get_endpoint(self, instance):
+        """Endpoints"""
+        if self.context["view"].detail is True:
+            return f"{get_url(self)}comments"
+        return f"{get_url(self)}{instance.id}"
 
+    def to_representation(self, instance):
+        """Repéresentation front des données"""
+        ret = super().to_representation(instance)
 
         if ret["tag"] == self.BUG[0]:
             ret["tag"] = self.BUG[1]
@@ -103,17 +125,18 @@ class IssueListSerializer(ModelSerializer):
         elif ret["status"] == self.COMPLETED[0]:
             ret["status"] = self.COMPLETED[1]
 
-
         assignee_user = User.objects.get(id=ret["assignee_user"])
         author_user = User.objects.get(username=instance.author_user)
         ret["assignee_user"] = assignee_user.username
         ret["author_user"] = author_user.username
-
         ret["created_time"] = format_datetime(instance.created_time)
-
         return ret
 
     def validate_assignee_user(self, value):
+        """
+        Vérification que l'utilisateur assigné à une issue est bien
+        contributor du project
+        """
         project = self.instance.project
         contributors_user = [c.user for c in project.contributors.all()]
         if value not in contributors_user:
@@ -121,17 +144,8 @@ class IssueListSerializer(ModelSerializer):
         return value
 
 
-class ProjectDetailSerializer(ModelSerializer):
-    endpoint = SerializerMethodField("get_endpoint")
-
-    def get_endpoint(self, instance):
-        return {
-            "users": f"api/project/{instance.id}/users",
-            "issues": f"api/project/{instance.id}/issues"
-        }
-
-
-class ProjectListSerializer(ModelSerializer):
+class ProjectSerializer(ModelSerializer):
+    """Serializer du model Project pour la vue list"""
     BACK_END = 'b', _("Back-end")
     FRONT_END = 'f', _("Front-end")
     IOS = 'i', _("iOS")
@@ -145,12 +159,15 @@ class ProjectListSerializer(ModelSerializer):
         model = Project
         exclude = ("author_user", )
 
-    def get_project_manager(self, instance):
+    @staticmethod
+    def get_project_manager(instance):
+        """Renvoi le manager du project"""
         queryset = Contributor.objects.get(project=instance, role='m')
-        serializers = ContributorListSerializer(queryset)
+        serializers = ContributorSerializer(queryset)
         return serializers.data["user"]
 
     def get_contributor__role(self, instance):
+        """Renvoi le rôle de l'utilisateur"""
         if self.context["request"].user.is_superuser:
             return "Domain supervisor"
         request_user = self.context["request"].user
@@ -158,13 +175,20 @@ class ProjectListSerializer(ModelSerializer):
             project=instance.id,
             user=request_user
         )
-        serializer = ContributorListSerializer(queryset)
+        serializer = ContributorSerializer(queryset)
         return serializer.data["role"]
 
     def get_endpoint(self, instance):
-        return f"api/projects/{instance.id}"
+        """Endpoints"""
+        if self.context["view"].detail is True:
+            return {
+                "users": f"{get_url(self)}users",
+                "issues": f"{get_url(self)}issues"
+            }
+        return f"{get_url(self)}{instance.id}"
 
     def to_representation(self, instance):
+        """Représentation front des données"""
         ret = super().to_representation(instance)
         if ret["type"] == self.BACK_END[0]:
             ret["type"] = self.BACK_END[1]

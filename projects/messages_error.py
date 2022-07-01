@@ -1,3 +1,5 @@
+"""Messages d'erreurs"""
+
 MESSAGE_VALIDATED_DATA_IS_NOT_CONTRIBUTOR = "L'utilisateur n'est pas " \
                                             "contributeur à ce project."
 MESSAGE_VALIDATED_DATA_NOT_MANY_MANAGER = "Un seul superviseur par project. " \

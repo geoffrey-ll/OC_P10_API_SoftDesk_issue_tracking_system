@@ -20,7 +20,6 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView, TokenRefreshView
 )
 
-
 from projects.views import (
     ContributorViewSet, CommentViewSet, IssueViewSet, ProjectViewSet
 )

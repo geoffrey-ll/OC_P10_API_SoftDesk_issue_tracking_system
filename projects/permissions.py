@@ -1,16 +1,23 @@
 from rest_framework.exceptions import NotAuthenticated, PermissionDenied
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
-
 from .messages_error import (
     MESSAGE_PERMISSION_DENIED,
     MESSAGE_PERMISSION_NOT_AUTHENTICATED
 )
-from .models import Contributor, Project
+from .models import Contributor
 
 
 class AssignPermission(BasePermission):
-    def get_my_role(self, request, view):
+    """
+    Permission par défaut.
+    Vérifie l'authentification et redirige vers les permissions associées au
+    role de l'utilisateur
+    """
+
+    @staticmethod
+    def get_my_role(request, view):
+        """Renvoi le rôle qu'a l'utilisateur dans le project"""
         if view.__class__.__name__ == "ProjectViewSet":
             project_id = view.kwargs["pk"]
         else:
@@ -40,7 +47,6 @@ class AssignPermission(BasePermission):
                     return ContributorPermission().has_permission(
                         request, view
                     )
-
         raise NotAuthenticated(detail=MESSAGE_PERMISSION_NOT_AUTHENTICATED)
 
     def has_object_permission(self, request, view, obj):
@@ -58,11 +64,12 @@ class AssignPermission(BasePermission):
                 return ContributorPermission().has_object_permission(
                     request, view, obj
                 )
-
         raise NotAuthenticated(detail=MESSAGE_PERMISSION_NOT_AUTHENTICATED)
 
 
 class ManagerPermission(BasePermission):
+    """Permissions pour les managers de project"""
+
     def has_permission(self, request, view):
         return True
 
@@ -76,6 +83,8 @@ class ManagerPermission(BasePermission):
 
 
 class ContributorPermission(BasePermission):
+    """Permissions pour les contributeurs (non manager) de project"""
+
     def has_permission(self, request, view):
         if view.__class__.__name__ is "ContributorViewSet":
             return request.method in SAFE_METHODS
