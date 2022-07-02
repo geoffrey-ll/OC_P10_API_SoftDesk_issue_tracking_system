@@ -48,10 +48,10 @@ urlpatterns = [
     path("api/signup/", CreateUserAPIView.as_view(), name="signup"),
     path("api/logout/", include("rest_framework.urls")),
     path(
-        "api/login/", TokenObtainPairView.as_view(), name="token_obtain_pair"
+        "api/tokens/", TokenObtainPairView.as_view(), name="token_obtain_pair"
     ),
     path(
-        "api/login/refresh/", TokenRefreshView.as_view(), name="token_refresh"
+        "api/tokens/refresh/", TokenRefreshView.as_view(), name="token_refresh"
     ),
     path("api/", include(router.urls)),
     path("api/", include(projects_router.urls)),

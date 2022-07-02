@@ -38,12 +38,11 @@ class ContributorViewSet(ModelViewSet):
         Pour associer le project lors de l'ajout d'un nouveau contributeur
         dans le project
         """
-        if self.request.user.is_authenticated:
-            project = Project.objects.get(id=get_project_pk(self))
-            try:
-                return serializer.save(project=project)
-            except:
-                raise ValidationError(MESSAGE_VALIDATED_DATA_NOT_MANY_MANAGER)
+        project = Project.objects.get(id=get_project_pk(self))
+        try:
+            return serializer.save(project=project)
+        except:
+            raise ValidationError(MESSAGE_VALIDATED_DATA_NOT_MANY_MANAGER)
 
 
 class CommentViewSet(ModelViewSet):
