@@ -33,17 +33,17 @@ L'utilisation de cette API nécessite une authentification et l'utilisation de t
 
 
 0.  Depuis un terminal, rendez-vous à la racine du projet.
-1.  Clonez ce dépôt à l'aide de la commande\
+1.  Clonez ce dépôt à l'aide de la commande
 ``` 
 git clone https://github.com/geoffrey-ll/P10_GL_API_SoftDesk .
 ```
 ou téléchargez-le [ici](https://github.com/geoffrey-ll/P10_GL_API_SoftDesk/archive/refs/heads/master.zip)
-2.  Créez un environnement virtuel avec ```python -m venv env``` sous Windows, \
+2. Créez un environnement virtuel avec ```python -m venv env``` sous Windows, \
 ou ``` python3 -m venv env``` sous macOS et Linux.
-3.  Activez l'environnement virtuel avec ``` env\Scripts\activate``` sous Windows, \
+3. Activez l'environnement virtuel avec ``` env\Scripts\activate``` sous Windows, \
  ou ``` source env/bin/activate``` sous macOS et Linux.
-4.  Installez les dépendances du projet avec ``` pip install -r requirements.txt```
-5.  Démarrez le serveur avec ``` python manage.py runserver```
+4. Installez les dépendances du projet avec ``` pip install -r requirements.txt```
+5. Démarrez le serveur avec ``` python manage.py runserver```
 
 Les étapes 1 à 4 ne sont nécessaires que pour la première utilisation.\
 Seules les étapes 0 et 5 suffiront pour démarrer le serveur ultérieurement.
