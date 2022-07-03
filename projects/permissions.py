@@ -96,3 +96,4 @@ class ContributorPermission(BasePermission):
 
         if request.user != obj.author_user:
             return request.method in SAFE_METHODS
+        return True
