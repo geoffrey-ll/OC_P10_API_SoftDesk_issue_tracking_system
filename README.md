@@ -45,10 +45,16 @@ ou ``` python3 -m venv env``` sous macOS et Linux.
 Les étapes 1 à 4 ne sont nécessaires que pour la première utilisation.\
 Seules les étapes 0 et 5 suffiront pour démarrer le serveur ultérieurement.
 
+```
+test01
+```
+
+```test02```
+
 
 # Connexion <a name="connexion"></a> #
 
-Une base de données contenant quelques exemples est présentes.\
+Une base de données contenant quelques exemples est présente.\
 Elles contiennent les comptes suivants :
 
 
