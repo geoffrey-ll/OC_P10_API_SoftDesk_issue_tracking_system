@@ -77,7 +77,7 @@ class ManagerPermission(BasePermission):
         if view.__class__.__name__ == "ContributorViewSet" \
                 or view.__class__.__name__ == "ProjectViewSet":
             return True
-        if request.user != obj.author_user:
+        if request.user != obj.authorg_user:
             return request.method in SAFE_METHODS
         return True
 
