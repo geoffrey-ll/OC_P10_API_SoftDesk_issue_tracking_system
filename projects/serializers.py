@@ -24,11 +24,16 @@ class ContributorSerializer(ModelSerializer):
     MANAGER = 'm', _("Superviseur")
     CONTRIBUTOR = 'c', _("Contributeur")
 
+    user_id = SerializerMethodField("get_user_id")
     endpoint = SerializerMethodField("get_endpoint")
 
     class Meta:
         model = Contributor
         exclude = ("project", )
+
+    def get_user_id(self, contributor):
+        """Renvoi l'{user_id} (différent du {contributor_id})"""
+        return contributor.user.id
 
     def get_endpoint(self, instance):
         """Endpoints"""
@@ -132,16 +137,22 @@ class IssueSerializer(ModelSerializer):
         ret["created_time"] = format_datetime(instance.created_time)
         return ret
 
-    def validate_assignee_user(self, value):
-        """
-        Vérification que l'utilisateur assigné à une issue est bien
-        contributor du project
-        """
-        project = self.instance.project
-        contributors_user = [c.user for c in project.contributors.all()]
-        if value not in contributors_user:
-            raise ValidationError(MESSAGE_VALIDATED_DATA_IS_NOT_CONTRIBUTOR)
-        return value
+    # def validate_assignee_user(self, value, instance):
+    #     """
+    #     Vérification que l'utilisateur assigné à une issue est bien
+    #     contributor du project
+    #     """
+    #     print(f"\n{value}\n")
+    #     print(f"\n{get_url(self)[14]}\n")
+    #     print(f"\n{self}\n")
+    #     print(f"\nINSTANCE\n{instance}\n")
+    #     # project = instance.project
+    #     #
+    #     # contributors_user = [c.user for c in project.contributors.all()]
+    #     # if value not in contributors_user:
+    #     #     raise ValidationError(MESSAGE_VALIDATED_DATA_IS_NOT_CONTRIBUTOR)
+    #     return value
+
 
 
 class ProjectSerializer(ModelSerializer):

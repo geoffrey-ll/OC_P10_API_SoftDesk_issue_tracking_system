@@ -55,6 +55,9 @@ class Contributor(models.Model):
             )
         ]
 
+    def __str__(self):
+        return f"Project: {self.project.pk} - User: {self.user.pk}"
+
 
 class Issue(models.Model):
     """Model issue"""
