@@ -24,12 +24,9 @@
     Cette API à été réalisé dans le cabdre d'un projet du parcours 
     "Développeur d'application - Python" d'OpenClassrooms.
 
-Cette API permet de gérer des projets de développement logiciels. À chaque projet peuvent être affectés des contributeurs, des problèmes tecniques (issues) et, pour ces derniers, des commentaires.
+Cette API permet de gérer des projets de développement logiciels. À chaque projet peuvent être affecté des contributeurs, des problèmes techniques (issues) et, pour ces derniers, des commentaires.
 
-L'utilisation de cette API nécessite une authentification (voir [connexion](#connexion)).
-
-
-# **Future image d'illustration** #
+L'utilisation de cette API nécessite une authentification et l'utilisation de token (voir [connexion](#connexion)).
 
 
 # Installation <a name="installation"></a> #
@@ -37,33 +34,30 @@ L'utilisation de cette API nécessite une authentification (voir [connexion](#co
 
 0.  Depuis un terminal, rendez-vous à la racine du projet.
 1.  Clonez ce dépôt à l'aide de la commande\
-`$ git clone https://github.com/geoffrey-ll/P10_GL_API_SoftDesk .` ou téléchargez-le [ici](https://github.com/geoffrey-ll/P10_GL_API_SoftDesk/archive/refs/heads/master.zip)
-2.  Créez un environnement virtuel avec `$ python -m venv env` sous Windows,\
-ou `$ python3 -m venv env` sous macOS et Linux.
-3.  Activez l'environnement virtuel avec `$ env\Scripts\activate` sous Windows,\
- ou `$ source env/bin/activate` sous macOS et Linux.
-4.  Installez les dépendances du projet avec `$ pip install -r requirements.txt`
-5.  Démarrez le serveur avec `$ python manage.py runserver`
+``` git clone https://github.com/geoffrey-ll/P10_GL_API_SoftDesk .``` ou téléchargez-le [ici](https://github.com/geoffrey-ll/P10_GL_API_SoftDesk/archive/refs/heads/master.zip)
+2.  Créez un environnement virtuel avec ```python -m venv env``` sous Windows, \
+ou ``` python3 -m venv env``` sous macOS et Linux.
+3.  Activez l'environnement virtuel avec ``` env\Scripts\activate``` sous Windows, \
+ ou ``` source env/bin/activate``` sous macOS et Linux.
+4.  Installez les dépendances du projet avec ``` pip install -r requirements.txt```
+5.  Démarrez le serveur avec ``` python manage.py runserver```
 
 Les étapes 1 à 4 ne sont nécessaires que pour la première utilisation.\
-Seules les étapes 0 et 5 suffiront pour démarrer le serveur utlérieurement.
+Seules les étapes 0 et 5 suffiront pour démarrer le serveur ultérieurement.
 
 
 # Connexion <a name="connexion"></a> #
 
+Une base de données contenant quelques exemples est présentes.\
+Elles contiennent les comptes suivants :
 
-Compte administrateur :\
-user : dev\
-mdp  : dddd__8888
 
-Autres comptes :\
-user : user#\
-mdp  : user#user#
-
-ou # doit être remplacé par un chiffre de 0 à 9.\
-EX :\
-user : user1\
-mdp  : user1user1
+|     username     |             password             | admin |
+|:----------------:|:--------------------------------:|:-----:|
+|       dev        |              devdev              |  oui  |
+| alphonse_leruiz  |  alphonse_leruizalphonse_leruiz  |  non  |
+|  claudine_ramos  |   claudine_ramosclaudine_ramos   |  non  |
+| eleanore_navarro | eleanore_navarroeleanore_navarro |  non  |
 
 
 # Documentation Postman <a name="doc_postman"></a> #
